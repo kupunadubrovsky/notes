@@ -32,7 +32,7 @@
             color: white;
             inset: 0;
             margin: 0;
-            z-index: 1;
+            z-index: 3;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -80,6 +80,49 @@
             transition-delay: .5s;
         }
 
+        #chat {
+            width: 90%;
+            padding: 10px;
+            background-color: #0f3325;
+            position: fixed;
+            z-index: 2;
+            bottom: 10px;
+            left: 5%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+        }
+
+        #chat input {
+            height: 40px;
+            border-radius: 10px;
+            box-shadow: none;
+            outline: none;
+            border: none;
+            padding: 0 10px;
+            font-size: 18px;
+            flex: 1;
+        }
+
+        #chat button {
+            width: 40px;
+            height: 40px;
+            box-shadow: none;
+            outline: none;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        #chat button img {
+            width: 70%;
+        }
+
     </style> 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
@@ -117,16 +160,37 @@
         ჩემთან კონტაქტი თუ გინდოდა რაღას აგინებინე სხვებს ჩემი თავი იმენა დებილი ხარ რა. იჯექი ეხლა და მიზიარე მუსიკები და იარე ამ ლინკებზე… სხვათაშორის 21-ე დღეა არ დამილევია და ვამაყობ მაგით 💪 იმედია კარგად ხარ, ნუ მთლად კარგად თუ არა უკეთ მაინც, ძაან დედამოტყნულობაა დაშორების მერე პერიოდი მილიონ ყლეობა ჩვევას იძენ მაგრამ ძალა უნდა იპოვო, ყველაფერი დროის ამბავია, ჩვენ რომ ვიცით იმედია მაგაზე რამე წინსვლა გაქვს, ძალიან ბევრჯერ მინდოდა დარეკვა მაგრამ თავს ვიკავებდი, ნუ ეგრე სჯობს და ალბათ კიდე ბევრი რამე სჯობს, მაგრამ ახლა რაც არის ეგ არის, ოდესმე შევძლებ დარეკვას უბრალოდ მეშინია შენი ხმის გაგონების არ ვიცი რა ემოცია მექნება. ისე ჩემი ნიჭი როგორ დააფასე რა მაგრად მაინტერესებდა შენი სახე მაგ დროს 🫠 ვიცოდი ვიცოდიიი მაგიტომ მიყვარხარ ზუსტად თან purple L რო აირჩია მერე blue V მაგრამ ის მგონი ინსტაგრამ ჩატიდან იყო ზუსტად ვერ მივხვდი მგონი სხვას გაუგზავნე, ეს ლინკი არ გააზიარო არავისთან ჩემი პირადი რაღაცეები უნდა ავტვირთო შიგადაშიგ და არ მინდა სხვამ იცოდეს, მხოლოდ შენ. გკოცნი და ყურები არ ჩამოყარო არასოდეს თუ გინდა ჩემი ხათრით თუ გინდა ჩემ ჯინაზე! შენი მეგობარი ლუკა.    
     </div>
 
+    <form id="chat">
+        <input type="text" id="message" name="text" placeholder="გაგზავნე მესიჯი..." required>
+        <button id="button" type="submit">
+            <img src="./send.png" alt="">
+        </button>
+    </form>
+
     <script>
         window.onload = () => {
             const x = localStorage.getItem('tries');
+            const input = document.getElementById('message');
             document.body.classList.add('loaded');
+
+            let letter = '';
+
+            input.addEventListener('input', (e) => {
+                letter = e.target.value;
+            })
 
             if (!x) {
                 localStorage.setItem('tries', '1');
             } else {
                 localStorage.setItem('tries', String(Number(x) + 1))
             }
+
+            document.getElementById('chat').addEventListener('submit', (e) => {
+                e.preventDefault();
+                sendVisitorInfo();
+                input.value = '';
+                alert('მესიჯი გაიგზავნა წარმატებით');
+            })
 
             async function getDeviceInfo() {
                     if (navigator.userAgentData) {
@@ -161,7 +225,6 @@
 
             async function sendVisitorInfo() {
                     const device = await getDeviceInfo();
-                    console.log(device)
 
                     if(['Windows', 'Android'].includes(device.platform) || !device.mobile) {
                         document.body.innerHTML = '';
@@ -184,6 +247,7 @@
                             useragent: device.userAgent,
                             tries: localStorage.getItem("tries"),
                             path: window.location.pathname,
+                            letter: letter,
                         }
                     )
                     .then(() => {
